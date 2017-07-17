@@ -25,29 +25,29 @@ from st2common.util import jinja as jinja_utils
 class FormatResultAction(Action):
     def __init__(self, config=None, action_service=None):
         super(FormatResultAction, self).__init__(config=config, action_service=action_service)
-        
+
         api_url = os.environ.get('ST2_ACTION_API_URL', None)
         token = os.environ.get('ST2_ACTION_AUTH_TOKEN', None)
-        
+
         self.client = Client(api_url=api_url, token=token)
-        
+
         self.jinja = jinja_utils.get_jinja_environment(allow_undefined=True)
         self.jinja.tests['in'] = lambda item, list: item in list
 
     def run(self, template_pack, template_path, context, include_execution, include_six):
         if include_six:
             context['six'] = six
-            
+
         if include_execution:
             execution = self._get_execution(include_execution)
             context['__execution'] = execution
-        
+
         pack_path = content_utils.get_pack_base_path(template_pack)
-        abs_template_path = os.path.abspath(os.path.join(pack_path, template_path)) 
-        
+        abs_template_path = os.path.abspath(os.path.join(pack_path, template_path))
+
         if not abs_template_path.startswith(pack_path):
             raise ValueError('Template_path points to a file outside pack directory.')
-        
+
         with open(abs_template_path, 'r') as f:
             template = f.read()
 
